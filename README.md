@@ -12,9 +12,11 @@
 
     # 只去除部分文字(xxx.720p-某某影视.mkv)
     python del.py 某某影视
+
     # 去除某个范围内的文字(xxx.720p-某某影视-某某制作.mkv)
     # 以下命令会移除 某某影视 到 .mkv 的内容，某某影视也会被移除 [某某影视, .mkv)，左开右闭区间
     python del.py 某某影视 .mkv
+
     # 忽略某些文件后缀，比如不想重命名 .mkv 和 .rmvb 文件后缀的文件
     python del.py 某某影视 none .mkv,.rmvb
     ```
