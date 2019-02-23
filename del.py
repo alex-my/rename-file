@@ -21,36 +21,42 @@ default_ignore_ext = ['']
 
 
 def delname(path, name1, name2, ignore_ext):
-    for item in os.listdir(path):
-        if item == 'del.py':
+    abspath = os.path.abspath(path)
+    for root, dirs, files in os.walk(abspath, topdown=False):
+        if ".git" in root:
             continue
-        if os.path.isfile(item):
-            execute(item, name1, name2, ignore_ext)
+        # 先修改文件名称
+        for file in files:
+            rename(root, file, name1, name2, ignore_ext)
+        # 再修改文件夹名称
+        for dir in dirs:
+            rename(root, dir, name1, name2, ignore_ext)
 
 
-def execute(item, name1, name2, ignore_ext):
-    if ignore_ext:
-        # 取文件后缀名称
-        ext = os.path.splitext(item)[1]
+def rename(root, path, name1, name2, ignore_ext):
+    if ignore_ext and os.path.isfile(path):
+        ext = os.path.splitext(path)[1]
         if ext in ignore_ext:
             return
 
+    filepath = os.path.join(root, path)
+    newpath = getnewname(path, name1, name2)
+    newfilepath = os.path.join(root, newpath)
+    os.rename(filepath, newfilepath)
+    print '[rename] {} -> {}'.format(path, newpath)
+
+
+def getnewname(path, name1, name2):
     rep = name1
     if name2:
-        pos1 = item.find(name1)
+        pos1 = path.find(name1)
         if pos1 == -1:
-            return
-        pos2 = item.find(name2)
+            return path
+        pos2 = path.find(name2)
         if pos2 != -1:
-            rep = item[pos1:pos2]
-    newname = item.replace(rep, '')
-    if newname != item:
-        rename(item, newname)
-
-
-def rename(item, newname):
-    os.rename(item, newname)
-    print "[rename] item: {}, newname: {}".format(item, newname)
+            rep = path[pos1:pos2]
+    newname = path.replace(rep, '')
+    return newname
 
 
 if __name__ == '__main__':
